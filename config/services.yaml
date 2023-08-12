@@ -4,7 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    elasticsearch_url: '%env(ELASTICSEARCH_URL)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -19,6 +19,15 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    Symfony\Bridge\Monolog\Handler\ElasticsearchLogstashHandler:
+        arguments:
+            $endpoint: "%elasticsearch_url%"
+            $index: "monolog"
+            $client: null
+            $level: !php/const Monolog\Logger::DEBUG
+            $bubble: true
+            $elasticsearchVersion: '7.14.0'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
